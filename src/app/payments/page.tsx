@@ -6,6 +6,7 @@ type Payment = {
   amount: number
   status: "pending" | "processing" | "success" | "failed"
   email: string
+  enabled?: boolean
 }
 
 
@@ -13,34 +14,39 @@ async function getData(): Promise<Payment[]> {
   // Fetch data from your API here.
   return [
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
+      id: "326eh52a",
+      amount: 300,
+      status: "success",
+      email: "zemaia@example.com",
+      enabled: true,
     },
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
+      id: "p2pe352f",
+      amount: 500,
+      status: "failed",
+      email: "yalin@example.com",
+      enabled: true,
     },
     {
-      id: "728ed52f",
-      amount: 100,
+      id: "p581d52b",
+      amount: 200,
       status: "pending",
-      email: "m@example.com",
+      email: "asd@example.com",
+      enabled: false,
     },
     {
-      id: "728ed52f",
-      amount: 100,
+      id: "128e452x",
+      amount: 120,
       status: "pending",
-      email: "m@example.com",
+      email: "mhh@example.com",
+      enabled: false,
     },
     {
-      id: "728ed52f",
+      id: "523tdb2f",
       amount: 100,
       status: "pending",
-      email: "m@example.com",
+      email: "teste@example.com",
+      enabled: true,
     },
   ]
 }

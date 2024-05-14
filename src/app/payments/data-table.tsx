@@ -4,6 +4,8 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -15,20 +17,29 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import React from "react"
+import { ChevronsUpDown } from "lucide-react"
 
-interface DataTableProps<TData> {
-  columns: ColumnDef<TData>[]
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
 
-export function DataTable<TData>({
+export function DataTable<TData, TValue>({
   columns,
   data,
-}: DataTableProps<TData>) {
+}: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = React.useState<SortingState>([])
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
   })
 
   return (
@@ -39,13 +50,37 @@ export function DataTable<TData>({
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} 
+                  >
+                    <Button 
+                     className={
+                      header.column.getCanSort()
+                        ? 'cursor-pointer select-none'
+                        : ''
+                      }
+                      variant="default" 
+                      onClick={header.column.getToggleSortingHandler()}
+                      title={
+                        header.column.getCanSort()
+                          ? header.column.getNextSortingOrder() === 'asc'
+                            ? 'Sort ascending'
+                            : header.column.getNextSortingOrder() === 'desc'
+                              ? 'Sort descending'
+                              : 'Clear sort'
+                          : undefined
+                      }
+                    >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
+                        {{
+                          asc: ' 🔼',
+                          desc: ' 🔽'
+                        }[header.column.getIsSorted() as string] || null}
+                    </Button>
                   </TableHead>
                 )
               })}
@@ -59,10 +94,21 @@ export function DataTable<TData>({
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
               >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+                {
+                row.getVisibleCells().map((cell) => (
+                  console.log(cell.column.columnDef.header),
+                    <TableCell key={cell.id}>
+                      {cell.column.columnDef.header === "Enabled" ? (
+                        <Button
+                          variant={cell.getValue() ? "default" : "destructive"}
+                          size="sm"
+                        >
+                          {cell.getValue() ? "true" : "false"}
+                        </Button>
+                      ) : (
+                        flexRender(cell.column.columnDef.cell, cell.getContext())
+                      )}
+                    </TableCell>
                 ))}
               </TableRow>
             ))
