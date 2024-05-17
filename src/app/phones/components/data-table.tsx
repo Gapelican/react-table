@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button"
 import React from "react"
 import { ChevronsUpDown } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -54,11 +55,14 @@ export function DataTable<TData, TValue>({
                   >
                     <Button 
                      className={
-                      header.column.getCanSort()
+                      cn(
+                        header.column.getCanSort()
                         ? 'cursor-pointer select-none'
-                        : ''
+                        : '',
+                        'pl-0'
+                      )
                       }
-                      variant="default" 
+                      variant="ghost" 
                       onClick={header.column.getToggleSortingHandler()}
                       title={
                         header.column.getCanSort()
