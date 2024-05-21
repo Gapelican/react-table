@@ -1,5 +1,5 @@
 import { newColumns } from "./new-columns"
-import { DataTable } from "./components/data-table"
+import { DataTable } from "../../components/data-table/data-table"
 import { api } from "@/data/api"
 
 type Phone = {

@@ -19,18 +19,24 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import React from "react"
-import { ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Switch } from "../ui/switch"
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+type InfosColumns = {
+  object: <T>() => T
+  id: string | number
+  status: boolean
 }
 
-export function DataTable<TData, TValue>({
+interface DataTableProps<T extends object> {
+  columns: ColumnDef<T>[]
+  data: T[]
+}
+
+export function DataTable<T extends object>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps<T>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const table = useReactTable({
     data,
@@ -42,6 +48,10 @@ export function DataTable<TData, TValue>({
       sorting,
     },
   })
+
+  const handleToggleColumn = (value: boolean, id: string) => {
+    console.log(value, id)
+  }
 
   return (
     <div className="rounded-md border">
@@ -101,15 +111,11 @@ export function DataTable<TData, TValue>({
                 {
                 row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {cell.column.columnDef.header === "Enabled" ? (
-                        <Button
-                          variant={cell.getValue() ? "default" : "destructive"}
-                          size="sm"
-                        >
-                          {cell.getValue() ? "true" : "false"}
-                        </Button>
-                      ) : (
+                      {cell.column.columnDef.header !== "Status" ? (
                         flexRender(cell.column.columnDef.cell, cell.getContext())
+                      ): (
+                        <Switch checked={cell.getValue() as boolean}
+                        onCheckedChange={(value) => handleToggleColumn(value, row.original.id)}/>
                       )}
                     </TableCell>
                 ))}

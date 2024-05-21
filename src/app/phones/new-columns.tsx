@@ -1,7 +1,6 @@
 'use client'
 
 import { ColumnDef } from "@tanstack/react-table"
-import { columns } from "./components/columns"
 
 type Phones = {
   id: string
@@ -17,12 +16,14 @@ type Phones = {
   }
 }
 
-
 export const newColumns: ColumnDef<Phones>[] = [
-  ...columns<Phones>(),
   {
     accessorKey: "id",
-    header: "ID", 
+    header: "ID",
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
   },
   {
     accessorKey: "name",
