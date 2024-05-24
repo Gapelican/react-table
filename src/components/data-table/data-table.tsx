@@ -18,25 +18,34 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import React from "react"
+import React, { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Switch } from "../ui/switch"
+import { api } from "@/data/api"
+import { table } from "console"
 
-type InfosColumns = {
-  object: <T>() => T
-  id: string | number
-  status: boolean
+
+interface WithId {
+  id: string;
 }
 
-interface DataTableProps<T extends object> {
+interface DataTableProps<T extends WithId> {
   columns: ColumnDef<T>[]
   data: T[]
+  meta?: {
+    deleteRow: (rowId: string) => void
+  }
 }
 
-export function DataTable<T extends object>({
+type TableMeta<T> = {
+  deleteRow?: (rowId: string) => void;
+};
+
+export function DataTable<T extends WithId>({
   columns,
-  data,
+  data: defaultData,
 }: DataTableProps<T>) {
+  const [data, setData] = useState(() => [...defaultData]);
   const [sorting, setSorting] = React.useState<SortingState>([])
   const table = useReactTable({
     data,
@@ -47,6 +56,20 @@ export function DataTable<T extends object>({
     state: {
       sorting,
     },
+    meta: {
+      deleteRow: (rowId: string) => {
+        const res = api(`/phones/${rowId}`, {
+          method: 'DELETE',
+        });
+        if (!res) {
+          console.log('Failed to delete phone');
+        } else {
+          setData((oldData) =>
+            oldData.filter((row) => row.id !== rowId)
+          );
+        }
+      },
+    } as TableMeta<T>,
   })
 
   const handleToggleColumn = (value: boolean, id: string) => {

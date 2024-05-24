@@ -1,5 +1,6 @@
 'use client'
 
+import { api } from "@/data/api"
 import { ColumnDef } from "@tanstack/react-table"
 
 type Phones = {
@@ -48,7 +49,7 @@ export const newColumns: ColumnDef<Phones>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: () => {
+    cell: ({row, table}) => {
       return (
         <div className="flex gap-2">
           <button
@@ -58,6 +59,16 @@ export const newColumns: ColumnDef<Phones>[] = [
           </button>
           <button
             className="rounded bg-red-500 py-1 px-2 text-white"
+            onClick={() => {
+              const res = api(`/phones/${row.original.id}`, {
+                method: 'DELETE',
+              })
+              if(!res) {
+                console.log('deu ruim')
+              }
+              // @ts-ignore
+              table.options.meta?.deleteRow(row.original.id)
+            }}
           >
             Delete
           </button>
@@ -65,6 +76,5 @@ export const newColumns: ColumnDef<Phones>[] = [
       )
     }
   }
-
 
 ]
