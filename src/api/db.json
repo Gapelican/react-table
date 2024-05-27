@@ -1,48 +1,9 @@
 {
   "phones": [
     {
-      "id": "e5",
-      "name": "Sarah Wilson",
-      "status": true,
-      "number_phone": "555555555",
-      "contact_page": "0",
-      "description": "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.",
-      "phone_category": {
-        "id": "e5",
-        "name": "Sarah Wilson",
-        "description": "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit."
-      }
-    },
-    {
-      "id": "f6",
-      "name": "Michael Brown",
-      "status": false,
-      "number_phone": "666666666",
-      "contact_page": "1",
-      "description": "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.",
-      "phone_category": {
-        "id": "f6",
-        "name": "Michael Brown",
-        "description": "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit."
-      }
-    },
-    {
-      "id": "f3",
-      "name": "Michael Brown",
-      "status": false,
-      "number_phone": "666666666",
-      "contact_page": "1",
-      "description": "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.",
-      "phone_category": {
-        "id": "f6",
-        "name": "Michael Brown",
-        "description": "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit."
-      }
-    },
-    {
       "id": "3426",
       "name": "Michael Brown",
-      "status": false,
+      "status": true,
       "number_phone": "666666666",
       "contact_page": "1",
       "description": "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.",
@@ -54,19 +15,6 @@
     },
     {
       "id": "q12hf6",
-      "name": "Michael Brown",
-      "status": false,
-      "number_phone": "666666666",
-      "contact_page": "1",
-      "description": "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.",
-      "phone_category": {
-        "id": "f6",
-        "name": "Michael Brown",
-        "description": "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit."
-      }
-    },
-    {
-      "id": "bb21f6",
       "name": "Michael Brown",
       "status": true,
       "number_phone": "666666666",
