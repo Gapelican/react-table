@@ -61,7 +61,9 @@ export default function MyForm() {
   };
 
   useEffect(() => {
-    fetchData();
+    if (params.id) {
+      fetchData();
+    } 
   }, [params.id, form]);
 
   // @ts-ignore
