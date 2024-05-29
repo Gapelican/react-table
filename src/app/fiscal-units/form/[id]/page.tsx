@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -15,43 +14,55 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import Link from "next/link";
+import { api } from "@/data/api";
+import { useEffect } from "react";
+import { useParams } from "next/navigation";
 
 
 export const formSchema = z.object({
   id: z.string(),
   name: z.string(),
-  status: z.boolean(),
-  number_phone: z.string(),
-  contact_page: z.string(),
-  description: z.string(),
-  phone_category: z.object({
-    id: z.string(),
-    name: z.string(),
-    description: z.string(),
-  })
+  is_active: z.boolean(),
+  value: z.string(),
+  published_at: z.string(),
 });
 
 export default function MyForm() {
+  const params = useParams()
   const [isChecked, setChecked] = useState(false)
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       id: "",
       name: "",
-      status: false,
-      number_phone: "",
-      contact_page: "",
-      description: "",
-      phone_category: {
-        id: "",
-        name: "",
-        description: "",
-      },
+      is_active: false,
+      value: "",
+      published_at: "",
     },
   });
+
+  const fetchData = async () => {
+    if (params.id) {
+      const res = await api(`/fiscal-units/${params.id}`);
+      const data = await res.json();
+
+      form.reset({
+        id: data.id,
+        name: data.name,
+        is_active: data.is_active,
+        value: data.value,
+        published_at: data.published_at,
+      });
+
+      setChecked(data.is_active);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [params.id, form]);
 
   // @ts-ignore
   const onSubmit = (values: any) => {
@@ -60,7 +71,7 @@ export default function MyForm() {
 
   return (
     <div className="container mx-auto py-10">
-      <Link className="rounded bg-blue-500 py-1 px-2 text-white" href="/phones">Back</Link>
+      <Link className="rounded bg-blue-500 py-1 px-2 text-white" href="/fiscal-units">Back</Link>
       <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
@@ -91,7 +102,7 @@ export default function MyForm() {
         />
         <FormField
           control={form.control}
-          name="status"
+          name="is_active"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Status</FormLabel>
@@ -104,7 +115,7 @@ export default function MyForm() {
         />
         <FormField
           control={form.control}
-          name="number_phone"
+          name="value"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Phone Number</FormLabel>
@@ -117,64 +128,12 @@ export default function MyForm() {
         />
         <FormField
           control={form.control}
-          name="contact_page"
+          name="published_at"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Contact Page</FormLabel>
               <FormControl>
                 <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="phone_category.id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone Category ID</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="phone_category.name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone Category Name</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="phone_category.description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone Category Description</FormLabel>
-              <FormControl>
-                <Textarea {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

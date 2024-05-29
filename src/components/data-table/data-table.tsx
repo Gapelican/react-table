@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils"
 import { Switch } from "../ui/switch"
 import { api } from "@/data/api"
 import { useDebouncedCallback } from "use-debounce"
+import { DataTablePagination } from "./pagination"
 
 
 interface WithId {
@@ -44,12 +45,14 @@ export function DataTable<T extends WithId>({
   const [data, setData] = useState(() => [...defaultData]);
   const [sorting, setSorting] = useState<SortingState>([]);
 
+  console.log(data)
+
   const deleteRow = async (rowId: string) => {
-    const res = await api(`/phones/${rowId}`, {
+    const res = await api(`/fiscal-units/${rowId}`, {
       method: 'DELETE',
     });
     if (!res) {
-      console.log('Failed to delete phone');
+      console.log('Failed to delete fiscal unit');
     } else {
       setData((oldData) =>
         oldData.filter((row) => row.id !== rowId)
@@ -57,19 +60,21 @@ export function DataTable<T extends WithId>({
     }
   }
 
-  const debouncedHandleSwitchChange = useDebouncedCallback(
-    async (id: string, status: boolean) => {
-      // Atualiza a UI de forma otimista
-      setData((oldData) =>
-        oldData.map((row) =>
-          row.id === id ? { ...row, status } : row
-        )
-      );
+  const handleSwitchChange = (id: string, isActive: boolean) => {
+    setData((oldData) =>
+      oldData.map((row) =>
+        row.id === id ? { ...row, is_active: isActive } : row
+      )
+    );
+    debouncedHandleSwitchChange(id, isActive);
+  };
 
+  const debouncedHandleSwitchChange = useDebouncedCallback(
+    async (id: string, isActive: boolean) => {
       // Faz a solicitação ao servidor
-      const res = await api(`/phones/${id}`, {
+      const res = await api(`/fiscal-units/${id}`, {
         method: 'PATCH',
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ is_active: isActive }),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -77,15 +82,15 @@ export function DataTable<T extends WithId>({
 
       // Se a solicitação falhar, reverte a mudança
       if (!res) {
-        console.log('Failed to update phone status');
+        console.log('Failed to update fiscal status');
         setData((oldData) =>
           oldData.map((row) =>
-            row.id === id ? { ...row, status: !status } : row
+            row.id === id ? { ...row, is_active: !isActive } : row
           )
         );
       }
     },
-    500 // 300 ms de debounce delay
+    300
   );
   
   
@@ -159,7 +164,7 @@ export function DataTable<T extends WithId>({
                     ) : (
                       <Switch
                         checked={cell.getValue() as boolean}
-                        onCheckedChange={(value) => debouncedHandleSwitchChange(row.original.id, value)}
+                        onCheckedChange={(value) => handleSwitchChange(row.original.id, value)}
                       />
                     )}
                   </TableCell>
@@ -175,6 +180,8 @@ export function DataTable<T extends WithId>({
           )}
         </TableBody>
       </Table>
+      <DataTablePagination table={table} />
     </div>
+    
   )
 }
