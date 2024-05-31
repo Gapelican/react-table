@@ -7,7 +7,8 @@ import { cn } from '@/lib/utils'
 
 const fetchFiscalUnit = async () => {
   const response = await api('/fiscal-units', {
-    cache: 'no-store',
+    // cache: 'no-store',
+    next: { tags : ['fiscal-units'] }
   });
   if (!response.ok) {
     throw new Error('Failed to fetch fiscal units');
@@ -18,7 +19,6 @@ const fetchFiscalUnit = async () => {
 
 export default async function DemoPage() {
   const data = await fetchFiscalUnit();
-  
   return (
     <div className="container mx-auto py-10">
       <Link 
