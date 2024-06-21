@@ -50,3 +50,29 @@ export async function handleSubmit(
     throw error;
   }
 }
+
+
+export async function handleSwitchChangeAction(id: number, isActive: boolean) {
+
+  console.log(id, isActive)
+
+  try {
+    const res = await api(`/Todos/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ completed: isActive }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!res) {
+      console.log('Falha ao atualizar o status do fiscal');
+    }
+
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+
+  revalidateTag('fiscal-units');
+}

@@ -30,10 +30,13 @@ export const columns: ColumnDef<FiscalUnit>[] = [
     id: "actions",
     header: "Actions",
     cell: ({row, table}) => {
+      // @ts-ignore
       return (
         <div className="flex gap-2">
+          
           <Link
-            href={`/fiscal-units/form/${row.original.id}`}
+            // @ts-ignore
+            href={table.options.meta?.isLoading ? '#' : `/fiscal-units/form/${row.original.id}`}
             className="rounded bg-blue-500 py-1 px-2 text-white"
           >
             Edit

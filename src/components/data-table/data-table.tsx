@@ -18,16 +18,19 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import { Switch } from "../ui/switch"
 import { api } from "@/data/api"
 import { useDebouncedCallback } from "use-debounce"
-import { DataTablePagination } from "./pagination"
+import { DataTablePagination } from "./data-table-pagination"
+import { handleSwitchChangeAction } from "@/app/(testes)/actions/server-actions"
+import { useSearchParams } from "next/navigation"
+import Link from "next/link"
 
 
 interface WithId {
-  id: string;
+  id: number;
 }
 
 interface DataTableProps<T extends WithId> {
@@ -44,10 +47,44 @@ export function DataTable<T extends WithId>({
 }: DataTableProps<T>) {
   const [data, setData] = useState(() => [...defaultData]);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingPagination, setIsLoadingPagination] = useState(false);
 
-  console.log(data)
+  const searchParams = useSearchParams()
+  
+  useEffect(() => {
+    if (searchParams.size > 0) {
+      console.log('fetching data...')
+      const page = searchParams.get('page') || '1'
+      const limit = searchParams.get('limit') || '5'
+      
+      const fetchData = async () => {
+        setIsLoadingPagination(true);
+        try {
+          const response = await api(`/comments?_page=${page}&_limit=${limit}`, {
+            next: { tags : ['fiscal-units'] }
+          });
+          if (!response.ok) {
+            throw new Error('Failed to fetch fiscal units');
+          }
 
-  const deleteRow = async (rowId: string) => {
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+
+          const data = await response.json();
+          setData(data);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsLoadingPagination(false);
+        }
+      };
+
+      fetchData();
+    }
+  }, [searchParams]);
+
+
+  const deleteRow = async (rowId: number) => {
     const res = await api(`/fiscal-units/${rowId}`, {
       method: 'DELETE',
     });
@@ -60,35 +97,23 @@ export function DataTable<T extends WithId>({
     }
   }
 
-  const handleSwitchChange = (id: string, isActive: boolean) => {
+  const handleSwitchChange = (id: number, isActive: boolean) => {
     setData((oldData) =>
       oldData.map((row) =>
         row.id === id ? { ...row, is_active: isActive } : row
       )
     );
+    setIsLoading(true);
     debouncedHandleSwitchChange(id, isActive);
   };
 
   const debouncedHandleSwitchChange = useDebouncedCallback(
-    async (id: string, isActive: boolean) => {
-      // Faz a solicitação ao servidor
-      const res = await api(`/fiscal-units/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ is_active: isActive }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+    async (id: number, isActive: boolean) => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Se a solicitação falhar, reverte a mudança
-      if (!res) {
-        console.log('Failed to update fiscal status');
-        setData((oldData) =>
-          oldData.map((row) =>
-            row.id === id ? { ...row, is_active: !isActive } : row
-          )
-        );
-      }
+      handleSwitchChangeAction(id, isActive);
+
+      setIsLoading(false);
     },
     300
   );
@@ -106,8 +131,15 @@ export function DataTable<T extends WithId>({
     },
     meta: {
       deleteRow,
+      isLoading,
     },
   });
+
+
+  // if (isLoadingPagination) {
+  //   console.log('Loading...')
+  //   return <div className="rounded-md border text-3xl">LOADING NA TABELA...</div>;
+  // }
 
   return (
     <div className="rounded-md border">
@@ -151,7 +183,7 @@ export function DataTable<T extends WithId>({
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {isLoadingPagination ? <TableRow><TableCell colSpan={columns.length} className="h-24 text-center">Loading...</TableCell></TableRow> : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
@@ -180,7 +212,16 @@ export function DataTable<T extends WithId>({
           )}
         </TableBody>
       </Table>
-      <DataTablePagination table={table} />
+
+      <div className="flex items-center gap-2 px-2">
+        <Link href={searchParams.get('page') ? `?page=${Number(searchParams.get('page')) - 1 || 1}` : '?page=1'}>
+          Anterior
+        </Link>
+        <span> | </span>
+        <Link href={searchParams.get('page') ? `?page=${Number(searchParams.get('page')) + 1 || 1}` : '?page=2'}>
+          Proximo
+        </Link>
+      </div>
     </div>
     
   )
